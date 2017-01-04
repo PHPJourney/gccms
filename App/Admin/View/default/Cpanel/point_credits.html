@@ -1,0 +1,121 @@
+<include file="Public:head" />
+<div class="panel admin-panel">
+	<div class="panel-head">
+		<strong>编辑积分规则 - {$policy.name}</strong>
+	</div>
+	<div class="body-content">
+		<form method="post" class="form-x">
+			<div class="form-group">
+				<div class="x12 bg-blue-light">
+					<div class="label text-blue">
+					  <strong>技巧提示</strong>
+					</div>
+				</div>
+				<div class="x12">
+					<small class="text-gray">
+						<p class="padding-left">各项积分增减允许的范围为 -99～+99。如果为更多的操作设置积分策略，系统就需要更频繁的更新用户积分，同时意味着消耗更多的系统资源，因此请根据实际情况酌情设置</p>
+					</small>
+				</div>
+			</div>
+			<div class="form-group">
+				<div class="x12 bg-blue-light">
+					<div class="label text-blue">
+					  <strong>编辑积分规则</strong>
+					</div>
+				</div>
+			</div>
+			<div class="form-group">
+				<div class="x12">
+					<div class="label">
+					  <strong>周期</strong>
+					</div>
+					<div class="field">
+					  <input type="radio" class="radio" name="data[valid]" id="once" value="一次" <eq name="policy['valid']" value="一次">checked</eq>> <label for="once">一次</label>
+					  <input type="radio" class="radio" name="data[valid]" id="everyday" value="每天" <eq name="policy['valid']" value="每天">checked</eq>> <label for="everyday">每天</label>
+					  <input type="radio" class="radio" name="data[valid]" id="twpo" value="整点" <eq name="policy['valid']" value="整点">checked</eq>> 整点
+					  <input type="radio" class="radio" name="data[valid]" id="im" value="间隔分钟" <eq name="policy['valid']" value="间隔分钟">checked</eq>> 间隔分钟
+					  <input type="radio" class="radio" name="data[valid]" id="unlimit" value="不限" <eq name="policy['valid']" value="不限">checked</eq>> 不限
+					</div>
+				</div>
+			</div>
+			<div class="form-group" id="immore">
+				<div class="x12">
+					<div class="label">
+					  <strong>间隔时间</strong>
+					</div>
+					<div class="x2">
+						<div class="fixed">
+						  <input type="text" class="input" name="data[cycletime]" value="{$policy.cycletime}">
+						</div>
+					</div>
+					<div class="x4 padding-left">
+						<small class="text-gray">当选择“整点”时，该单位为“小时”；选择“间隔分钟”时，该单位为“分钟”</small>
+					</div>
+				</div>
+			</div>
+			<div class="form-group" id="oncemore">
+				<div class="x12">
+					<div class="label">
+					  <strong>周期内最多奖励次数</strong>
+					</div>
+					<div class="x2">
+						<div class="fixed once">
+						  <input type="text" class="input" name="data[rewardnum]" value="{$policy.rewardnum}">
+						</div>
+					</div>
+					<div class="x4 padding-left">
+						<small class="text-gray">0为不限次数</small>
+					</div>
+				</div>
+			</div>
+			<volist name="point" id="invate">
+				<div class="form-group">
+					<div class="x12">
+						<div class="label">
+							<strong>{$invate.variable} ({$invate.name})</strong>
+						</div>
+						<div class="x2">
+						<?php $variable = $invate['variable'].$policy['variable']; ?>
+							<input type="text" class="input" name="policy[{$variable}]" value="{$setting[$variable]}">
+						</div>
+					</div>
+				</div>
+			</volist>
+			<input type="hidden" name="data[variable]" value="{$policy.variable}">
+			<div class="form-group">
+				<div class="x12">
+					<div class="label">
+					  <label></label>
+					</div>
+					<div class="field">
+					  <button class="button bg-main icon-check-square-o" type="submit"> 提交</button>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
+<script type="text/javascript">
+$(function(){
+	if("{$policy['valid']}"=="整点" || "{$policy['valid']}"=="间隔分钟"){
+		$("#immore").show();
+	}else{
+		$("#immore").hide();
+	}
+	$("#once").click(function(){
+		$(".once").html("<input type='hidden' name='data[rewardnum]' value='N/A'>");
+		$("#oncemore").hide();
+	})
+	$("#im,#twpo").click(function(){
+		$("#immore").show();
+		$(".once").html('<input type="text" class="input" name="data[rewardnum]" value="{$policy.rewardnum}">');
+		$("#oncemore").show();
+	});
+	$("#everyday,#unlimit").click(function(){
+		$("#immore").hide();
+		$(".once").html('<input type="text" class="input" name="data[rewardnum]" value="{$policy.rewardnum}">');
+		$("#oncemore").show();
+	})
+})
+</script>
+<include file="Public:footer" />
