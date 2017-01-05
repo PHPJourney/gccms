@@ -1,6 +1,7 @@
 <?php
 namespace Admin\Controller;
-class BaseController extends \Common\Controller\CommonController{
+use Think\Controller;
+class BaseController extends Controller{
 	
 	public function _initialize(){
 		$this->setting = $this->setting();
