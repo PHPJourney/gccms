@@ -22,12 +22,28 @@ class RechargeModel extends \Think\Model{
 			$sql[] = $up;
 		}else{
 			if($order['status']!=0){
-				$up = "当前订单状态为" . $order['status']==1 ? "已到账" : "已取消";
+				$up = $order['status']==1 ? "当前订单状态为已到账" : "当前订单状态为已取消";
 				$sql[] = $up;
 			}else{
-				$up[] = $m->where(array("id"=>$id))->setField("status",1);
+				$data = array(
+					"mer_no"	=> 1,
+					"status"	=> 1
+				);
+				$up[] = $m->where(array("id"=>$id))->save($data);
 				$sql[] = $m->getlastsql();
-				$up[] = D("memberWallet")->where(array("uid"=>$order["uid"]))->setInc("amount",$order["amount"]);
+				$setting = D("Setting")->read();
+				$map = array("uid"=>$order["uid"],"coin"=>$setting['pointcreditstrans']);
+				$wallet = D("memberWallet")->where($map)->find();
+				if(empty($wallet)){
+					$newdata = array(
+						"uid"	=> $order['uid'],
+						"amount"=> $order['amount'],
+						"coin"	=> $setting['pointcreditstrans']
+					);
+					$up[] = D("memberWallet")->add($newdata);
+				}else{
+					$up[] = D("memberWallet")->where($map)->setInc("amount",$order["amount"]);
+				}
 				$sql[] = D("memberWallet")->getlastsql();
 			}
 		}

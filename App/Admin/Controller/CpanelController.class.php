@@ -17,6 +17,26 @@ class CpanelController extends BaseController {
 		}
 	}
 	
+	public function log(){
+		$this->log = D("Logrecord")->read();
+		$this->display();
+	}
+	
+	public function logshow(){
+		extract(I(''));
+		header("Content-Type:text/plain;charset=utf-8");
+		$log = D("logrecord")->where(array("logtags"=>$tags))->find();
+		$this->show( '
+<link href="//cdn.bootcss.com/highlight.js/8.0/styles/monokai_sublime.min.css" rel="stylesheet">
+<pre>
+    <code style="word-break:break-all;overflow:auto">
+'. $log['logtext'] .'
+    </code>
+</pre>
+<script src="//cdn.bootcss.com/highlight.js/8.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>');
+	}
+	
 	public function profile(){
 		extract(I(''));
 		$this->cate = $cate;
