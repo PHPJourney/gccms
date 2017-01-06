@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: 2017-01-04 16:51:04
+-- Generation Time: 2017-01-06 16:00:59
 -- 服务器版本： 5.6.15-log
 -- PHP Version: 5.5.7
 
@@ -19,8 +19,6 @@ SET time_zone = "+00:00";
 --
 -- Database: `cms`
 --
-CREATE DATABASE IF NOT EXISTS `cms` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
-USE `cms`;
 
 -- --------------------------------------------------------
 
@@ -28,7 +26,6 @@ USE `cms`;
 -- 表的结构 `gccms_admin`
 --
 
-DROP TABLE IF EXISTS `gccms_admin`;
 CREATE TABLE IF NOT EXISTS `gccms_admin` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user` char(30) NOT NULL,
@@ -39,7 +36,7 @@ CREATE TABLE IF NOT EXISTS `gccms_admin` (
   `secrand` char(64) NOT NULL COMMENT '随机码',
   `secauth` char(6) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='管理员' AUTO_INCREMENT=3 ;
 
 -- --------------------------------------------------------
 
@@ -47,7 +44,6 @@ CREATE TABLE IF NOT EXISTS `gccms_admin` (
 -- 表的结构 `gccms_article`
 --
 
-DROP TABLE IF EXISTS `gccms_article`;
 CREATE TABLE IF NOT EXISTS `gccms_article` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `uid` int(11) NOT NULL DEFAULT '0' COMMENT '用户ID',
@@ -72,13 +68,27 @@ CREATE TABLE IF NOT EXISTS `gccms_article` (
 -- 表的结构 `gccms_event_track`
 --
 
-DROP TABLE IF EXISTS `gccms_event_track`;
 CREATE TABLE IF NOT EXISTS `gccms_event_track` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `category` char(20) DEFAULT NULL,
   `time` char(100) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=21509 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='监听日志' AUTO_INCREMENT=24433 ;
+
+-- --------------------------------------------------------
+
+--
+-- 表的结构 `gccms_finance`
+--
+
+CREATE TABLE IF NOT EXISTS `gccms_finance` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `uid` int(11) NOT NULL COMMENT '用户ID',
+  `coin` char(50) NOT NULL COMMENT '币种',
+  `remark` text NOT NULL COMMENT '事件',
+  `time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='资金日志' AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -86,7 +96,6 @@ CREATE TABLE IF NOT EXISTS `gccms_event_track` (
 -- 表的结构 `gccms_global_timeoffset`
 --
 
-DROP TABLE IF EXISTS `gccms_global_timeoffset`;
 CREATE TABLE IF NOT EXISTS `gccms_global_timeoffset` (
   `name` varchar(200) NOT NULL COMMENT '全球时区名称',
   `timeoffset` char(50) NOT NULL COMMENT '时差'
@@ -98,7 +107,6 @@ CREATE TABLE IF NOT EXISTS `gccms_global_timeoffset` (
 -- 表的结构 `gccms_logrecord`
 --
 
-DROP TABLE IF EXISTS `gccms_logrecord`;
 CREATE TABLE IF NOT EXISTS `gccms_logrecord` (
   `logtags` char(8) DEFAULT NULL,
   `logtext` longtext,
@@ -108,10 +116,44 @@ CREATE TABLE IF NOT EXISTS `gccms_logrecord` (
 -- --------------------------------------------------------
 
 --
+-- 表的结构 `gccms_member`
+--
+
+CREATE TABLE IF NOT EXISTS `gccms_member` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user` char(100) NOT NULL,
+  `pwd` char(32) NOT NULL,
+  `nick` char(100) NOT NULL,
+  `avatar` varchar(500) NOT NULL,
+  `create_ip` char(50) NOT NULL,
+  `last_ip` char(50) NOT NULL,
+  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `last_time` char(30) NOT NULL,
+  `status` tinyint(1) NOT NULL,
+  `secpwd` char(32) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户表' AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- 表的结构 `gccms_member_wallet`
+--
+
+CREATE TABLE IF NOT EXISTS `gccms_member_wallet` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `uid` int(11) NOT NULL COMMENT '用户ID',
+  `coin` char(20) NOT NULL DEFAULT 'cny' COMMENT '积分类型',
+  `amount` decimal(20,2) NOT NULL DEFAULT '0.00' COMMENT '余额',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='用户钱包' AUTO_INCREMENT=2 ;
+
+-- --------------------------------------------------------
+
+--
 -- 表的结构 `gccms_menu`
 --
 
-DROP TABLE IF EXISTS `gccms_menu`;
 CREATE TABLE IF NOT EXISTS `gccms_menu` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` char(100) NOT NULL DEFAULT '' COMMENT '菜单名称',
@@ -121,7 +163,7 @@ CREATE TABLE IF NOT EXISTS `gccms_menu` (
   `order` int(11) NOT NULL DEFAULT '99' COMMENT '菜单排序',
   `used` char(30) NOT NULL DEFAULT '1' COMMENT '使用状态',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='菜单管理' AUTO_INCREMENT=46 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='菜单管理' AUTO_INCREMENT=47 ;
 
 -- --------------------------------------------------------
 
@@ -129,7 +171,6 @@ CREATE TABLE IF NOT EXISTS `gccms_menu` (
 -- 表的结构 `gccms_nav`
 --
 
-DROP TABLE IF EXISTS `gccms_nav`;
 CREATE TABLE IF NOT EXISTS `gccms_nav` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `cate` char(30) NOT NULL COMMENT '导航位置',
@@ -154,7 +195,6 @@ CREATE TABLE IF NOT EXISTS `gccms_nav` (
 -- 表的结构 `gccms_operation_log`
 --
 
-DROP TABLE IF EXISTS `gccms_operation_log`;
 CREATE TABLE IF NOT EXISTS `gccms_operation_log` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `uid` int(11) NOT NULL COMMENT '用户id',
@@ -164,7 +204,7 @@ CREATE TABLE IF NOT EXISTS `gccms_operation_log` (
   `remark` varchar(500) NOT NULL COMMENT '备注',
   `time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '操作时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='系统操作日志' AUTO_INCREMENT=3026 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='系统操作日志' AUTO_INCREMENT=3541 ;
 
 -- --------------------------------------------------------
 
@@ -172,7 +212,6 @@ CREATE TABLE IF NOT EXISTS `gccms_operation_log` (
 -- 表的结构 `gccms_pay_config`
 --
 
-DROP TABLE IF EXISTS `gccms_pay_config`;
 CREATE TABLE IF NOT EXISTS `gccms_pay_config` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `tags` char(30) NOT NULL,
@@ -180,7 +219,7 @@ CREATE TABLE IF NOT EXISTS `gccms_pay_config` (
   `remark` char(200) NOT NULL,
   `status` tinyint(1) NOT NULL COMMENT '0 关闭 1 开通',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=10 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='支付渠道管理' AUTO_INCREMENT=10 ;
 
 -- --------------------------------------------------------
 
@@ -188,7 +227,6 @@ CREATE TABLE IF NOT EXISTS `gccms_pay_config` (
 -- 表的结构 `gccms_point`
 --
 
-DROP TABLE IF EXISTS `gccms_point`;
 CREATE TABLE IF NOT EXISTS `gccms_point` (
   `name` text NOT NULL COMMENT '积分名称',
   `ico` text NOT NULL COMMENT '积分图标',
@@ -209,7 +247,6 @@ CREATE TABLE IF NOT EXISTS `gccms_point` (
 -- 表的结构 `gccms_policy`
 --
 
-DROP TABLE IF EXISTS `gccms_policy`;
 CREATE TABLE IF NOT EXISTS `gccms_policy` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` char(100) NOT NULL,
@@ -218,7 +255,7 @@ CREATE TABLE IF NOT EXISTS `gccms_policy` (
   `cycletime` int(11) NOT NULL COMMENT '间隔时间',
   `variable` char(20) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=20 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='积分策略' AUTO_INCREMENT=20 ;
 
 -- --------------------------------------------------------
 
@@ -226,7 +263,6 @@ CREATE TABLE IF NOT EXISTS `gccms_policy` (
 -- 表的结构 `gccms_recharge`
 --
 
-DROP TABLE IF EXISTS `gccms_recharge`;
 CREATE TABLE IF NOT EXISTS `gccms_recharge` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `uid` int(11) NOT NULL COMMENT '用户ID',
@@ -246,14 +282,13 @@ CREATE TABLE IF NOT EXISTS `gccms_recharge` (
 -- 表的结构 `gccms_session`
 --
 
-DROP TABLE IF EXISTS `gccms_session`;
 CREATE TABLE IF NOT EXISTS `gccms_session` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `uid` int(11) NOT NULL,
   `time` char(20) CHARACTER SET latin1 NOT NULL,
   `ip` char(15) CHARACTER SET latin1 NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='登录缓存' AUTO_INCREMENT=36 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='登录缓存' AUTO_INCREMENT=44 ;
 
 -- --------------------------------------------------------
 
@@ -261,7 +296,6 @@ CREATE TABLE IF NOT EXISTS `gccms_session` (
 -- 表的结构 `gccms_setting`
 --
 
-DROP TABLE IF EXISTS `gccms_setting`;
 CREATE TABLE IF NOT EXISTS `gccms_setting` (
   `field` char(200) NOT NULL,
   `val` longtext,
@@ -274,32 +308,26 @@ CREATE TABLE IF NOT EXISTS `gccms_setting` (
 -- 表的结构 `gccms_sort`
 --
 
-DROP TABLE IF EXISTS `gccms_sort`;
 CREATE TABLE IF NOT EXISTS `gccms_sort` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` char(100) NOT NULL COMMENT '分类名称',
   `use` tinyint(1) NOT NULL DEFAULT '1' COMMENT '使用',
   `pid` int(11) NOT NULL COMMENT '上级菜单',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=11 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='项目分类管理' AUTO_INCREMENT=11 ;
 
 DELIMITER $$
 --
 -- 事件
 --
-DROP EVENT `update_secauth`$$
 CREATE DEFINER=`coinfact_send`@`localhost` EVENT `update_secauth` ON SCHEDULE EVERY 1 MINUTE STARTS '2016-12-20 00:00:00' ENDS '2031-10-20 00:00:00' ON COMPLETION PRESERVE ENABLE COMMENT '更新随机码' DO UPDATE `gccms_admin` SET `secauth`=ceiling(rand() * 999999)$$
 
-DROP EVENT `clean_session`$$
 CREATE DEFINER=`coinfact_send`@`localhost` EVENT `clean_session` ON SCHEDULE EVERY 1 MINUTE STARTS '2016-12-23 00:00:00' ENDS '2036-12-23 00:00:00' ON COMPLETION PRESERVE ENABLE COMMENT '删除超过1800秒的缓存' DO delete from gccms_session where unix_timestamp(now()) - `time`  > 1800$$
 
-DROP EVENT `event_track`$$
 CREATE DEFINER=`coinfact_send`@`localhost` EVENT `event_track` ON SCHEDULE EVERY 1 MINUTE STARTS '2016-12-20 00:00:00' ENDS '2031-12-20 00:00:00' ON COMPLETION PRESERVE ENABLE DO insert into gccms_event_track(`category`,`time`) values ('update_secauth',now())$$
 
-DROP EVENT `change_recharge_status`$$
 CREATE DEFINER=`coinfact_send`@`localhost` EVENT `change_recharge_status` ON SCHEDULE EVERY 30 MINUTE STARTS '2017-01-04 00:00:00' ENDS '2038-01-04 00:00:00' ON COMPLETION PRESERVE ENABLE COMMENT '更新状态未到账并且充值时间大于1800秒的订单为已取消' DO update gccms_recharge set `status`=2 where unix_timestamp(`time`) < unix_timestamp(now()) - 1800$$
 
-DROP EVENT `event_track1`$$
 CREATE DEFINER=`coinfact_send`@`localhost` EVENT `event_track1` ON SCHEDULE EVERY 30 MINUTE STARTS '2017-01-04 00:00:00' ENDS '2038-01-04 00:00:00' ON COMPLETION PRESERVE ENABLE COMMENT '运行充值记录状态更新监听事件' DO insert into gccms_event_track(`category`,`time`) values ('change_recharge',now())$$
 
 DELIMITER ;
