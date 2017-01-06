@@ -61,61 +61,6 @@
       </div>
       <div class="form-group">
         <div class="label">
-          <label>HTML静态缓存：</label>
-        </div>
-        <div class="x3">
-			<div class="field">
-			  <select class="input" name="data[htmlcache]" size="2">
-				<option value="0" <eq name="setting.htmlcache" value="0">selected</eq>>关闭</option>
-				<option value="1" <eq name="setting.htmlcache" value="1">selected</eq>>开启</option>
-			  </select>
-			</div>
-        </div>
-		<div class="x7">
-          <div class="tips padding-left">开启多语言、多风格禁用，关键字“<code class="text-red">htmlcache</code>”</div>
-		</div>
-      </div>
-      <div class="form-group">
-        <div class="label">
-          <label>全局静态缓存有效期</label>
-        </div>
-        <div class="x3">
-			<div class="field">
-			  <input type="text" class="input" name="data[htmlcachetime]" value="{$setting.htmlcachetime}">
-			</div>
-        </div>
-		<div class="x7">
-          <div class="tips padding-left">单位为秒,关键字“<code class="text-red">htmlcachetime</code>”</div>
-		</div>
-      </div>
-      <div class="form-group">
-        <div class="label">
-          <label>设置静态文件后缀</label>
-        </div>
-        <div class="x3">
-			<div class="field">
-			  <input type="text" class="input" name="data[htmlfilesuffix]" value="{$setting.htmlfilesuffix}">
-			</div>
-        </div>
-		<div class="x7">
-          <div class="tips padding-left">设置静态文件后缀，关键字“<code class="text-red">htmlfilesuffix</code>”</div>
-		</div>
-      </div>
-      <div class="form-group">
-        <div class="label">
-          <label>HTML静态化规则：</label>
-        </div>
-        <div class="x3">
-			<div class="field">
-			  <textarea class="input" name="data[htmlcacherules]" style="height:80px">{$setting['htmlcacherules']}</textarea>
-			</div>
-		</div>
-		<div class="x7">
-          <div class="tips padding-left">每行一条，格式：index:index|index|6000|md5，四个参数使用"|"分开，第一个 index:index 为需要静态化的url，也可以写作index/index，第二个为html静态化模板名称，第三个是缓存时间,第四个为附加规则，可不填，关键字“<code class="text-red">htmlcacherules</code>”</div>
-		</div>
-      </div>
-      <div class="form-group">
-        <div class="label">
           <label>网站关键字：</label>
         </div>
         <div class="x3">
