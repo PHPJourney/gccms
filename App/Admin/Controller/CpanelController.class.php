@@ -22,6 +22,21 @@ class CpanelController extends BaseController {
 		$this->display();
 	}
 	
+	public function runtimeshow(){
+		extract(I(''));
+		header("Content-Type:text/plain;charset=utf-8");
+		$log = D("operationLog")->where(array("id"=>$id))->find();
+		$this->show( '
+<link href="//cdn.bootcss.com/highlight.js/8.0/styles/monokai_sublime.min.css" rel="stylesheet">
+<pre>
+    <code style="word-break:break-all;overflow:auto">
+'. implode("\r\n",unserialize($log['sql'])) .'
+    </code>
+</pre>
+<script src="//cdn.bootcss.com/highlight.js/8.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>');
+	}
+	
 	public function logshow(){
 		extract(I(''));
 		header("Content-Type:text/plain;charset=utf-8");

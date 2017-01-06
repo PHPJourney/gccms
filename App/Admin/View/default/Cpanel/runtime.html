@@ -24,7 +24,7 @@
 						<td>{$vo.nick}</td>
 						<td>{$vo.cate}</td>
 						<td>{$vo.remark}</td>
-						<td><?php $sql = unserialize($vo['sql']); ?>{$sql[0]|msubstr=0,60,'utf-8',true}</td>
+						<td><a href="{:U('Cpanel/runtimeshow?id='.$vo['id'])}" target="_sqltarget" class="text-blue"><?php $sql = unserialize($vo['sql']); ?>{$sql[0]|msubstr=0,60,'utf-8',true}</a></td>
 						<td>{$vo.time}</td>
 					</tr>
 				</volist>
