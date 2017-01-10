@@ -1,5 +1,5 @@
 # `GCCMS`
-[![GCCMS](http://groupcoin.tech/Public/default/images/visitor.png)](https://groupcoin.tech "访客统计")<br>
+[![GCCMS](http://groupcoin.tech/Public/default/images/visitor.png)](http://groupcoin.tech "访客统计")<br>
 #### 项目适用于对THINKPHP框架比较熟悉的用户
 Version：0.0.1（初版）<br>
 `GCCMS` UI框架使用 @pintuer，富媒体编辑器采用 @xhEditor，Excel为PHPExcel插件，后台核心框架为THINKPHP3.2.3<br>
