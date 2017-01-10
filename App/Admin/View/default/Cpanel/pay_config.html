@@ -59,6 +59,38 @@
 			<div class="form-group">
 				<div class="x12">
 					<div class="label">
+						<label>同步通知</label>
+					</div>
+					<div class="x3">
+						<div class="field">
+							<?php $tagskey = $tags."_return_uri"; ?>
+							<input type="text" class="input" name="data[{$tags}_return_uri]" value="{$setting.$tagskey}">
+						</div>
+					</div>
+					<div class="x7">
+						<small class="text-gray">支付接口支付完成同步跳转接口地址，查询关键字（<code class="text-red">{$tagskey}</code>）</small>
+					</div>
+				</div>
+			</div>
+			<div class="form-group">
+				<div class="x12">
+					<div class="label">
+						<label>异步通知</label>
+					</div>
+					<div class="x3">
+						<div class="field">
+							<?php $tagskey = $tags."_callback_uri"; ?>
+							<input type="text" class="input" name="data[{$tags}_callback_uri]" value="{$setting.$tagskey}">
+						</div>
+					</div>
+					<div class="x7">
+						<small class="text-gray">支付接口支付完成异步通知接口地址，查询关键字（<code class="text-red">{$tagskey}</code>）</small>
+					</div>
+				</div>
+			</div>
+			<div class="form-group">
+				<div class="x12">
+					<div class="label">
 						<label>密匙</label>
 					</div>
 					<div class="x3">
