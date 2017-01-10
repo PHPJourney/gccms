@@ -5,6 +5,7 @@ class CommonController extends \Think\Controller{
 	public function _initialize(){
 		$this->setting = $this->setting();
 		$this->state($this->setting);
+		$this->visitorSum();
 	}
 
 	protected function setting(){
@@ -30,6 +31,60 @@ class CommonController extends \Think\Controller{
 		}
 		C("HTML_CACHE_TIME",$setting['htmlcachetime']=='' ? C('HTML_CACHE_TIME') : $setting['htmlcachetime']);
 		C("HTML_FILE_SUFFIX",$setting['htmlfilesuffix']=='' ? C('HTML_FILE_SUFFIX') : $setting['htmlfilesuffix']);
-		C("HTML_CACHE_RULES",!$cacherules ? C("HTML_CACHE_RULES") : $cacherules);
+		C("HTML_CACHE_RULES",$cacherules ? $cacherules : C("HTML_CACHE_RULES"));
 	}
+	
+	protected function visitorSum(){
+		$ip = session("visitor_client_ip") == '' ? get_client_ip() : session("visitor_client_ip");
+		$area = session("visitorarea") == '' ? json_decode(iparea($ip)) : session("visitorarea");
+		session("visitorarea",$area);
+		session("visitor_client_ip",$ip);
+		if(empty(session('visitor'))){
+			$visitor[] = array(
+				'ip'		=> $ip,
+				'path'		=> $_SERVER['PATH_INFO'],
+				'method'	=> $_SERVER['REQUEST_METHOD'],
+				'protocol'	=> $_SERVER['SERVER_PROTOCOL'],
+				'url'		=> $_SERVER['HTTP_REFERER'],
+				'status'	=> $_SERVER['REDIRECT_STATUS'],
+				'explorer'	=> getBrowser(),
+				'system'	=> getOS(),
+				'core'		=> getOS(1),
+				'version'	=> getBrowserVer(),
+				'country'	=> $area->data->country,
+				'state'		=> $area->data->region,
+				'area'		=> $area->data->isp,
+			);
+		}else{
+			$visitor = session("visitor");
+			$visitor[] = array(
+				'ip'		=> $ip,
+				'path'		=> $_SERVER['PATH_INFO'],
+				'method'	=> $_SERVER['REQUEST_METHOD'],
+				'protocol'	=> $_SERVER['SERVER_PROTOCOL'],
+				'url'		=> $_SERVER['HTTP_REFERER'],
+				'status'	=> $_SERVER['REDIRECT_STATUS'],
+				'explorer'	=> getBrowser(),
+				'system'	=> getOS(),
+				'core'		=> getOS(1),
+				'version'	=> getBrowserVer(),
+				'country'	=> $area->data->country,
+				'state'		=> $area->data->region,
+				'area'		=> $area->data->isp,
+			);
+		}
+		session('visitor',$visitor);
+		if((time() - session("visitortime") > 300 && session("visitortime") > 0) || count($visitor) > 30){
+			$m = D("visitor");
+			C("TOKEN_ON",false);
+			if($m->create($visitor)){
+				$m->addAll($visitor);
+				session("visitor",array());
+				session("visitortime",time());
+			}
+		}else{
+			session("visitortime",time());
+		}
+	}
+	
 }

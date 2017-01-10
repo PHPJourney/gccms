@@ -25,6 +25,12 @@ class LoginController extends Controller{
 		}
 	}
 	
+	public function logout(){
+		unset($_SESSION);
+		session_destroy();
+		redirect("/");
+	}
+	
 	public function check($code,$id=''){
 		$verify = new \Think\Verify();
 		return $verify->check($code, $id);

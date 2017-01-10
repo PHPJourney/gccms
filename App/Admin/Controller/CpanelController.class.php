@@ -158,6 +158,62 @@ class CpanelController extends BaseController {
 		}
 	}
 	
+	public function visitor(){
+		$m = D("visitor");
+		$this->countsum = $m->count();
+		$this->color = array(
+			'#0ae','#e33','#000','#f60','#999999',"#3f51b5","#673ab7","#9c27b0","#03a9f4","#00bcd4","#009688","#4caf50","#8bc34a","#cddc39","#ffeb3b","#ffc107","#ff9800","#ff5722","#795548","#9e9e9e","#607d8b"
+		);
+		$this->country = explode(",","阿富汗,安哥拉,阿尔巴尼亚,阿联酋,阿根廷,亚美尼亚,法属南半球和南极领地,澳大利亚,奥地利,阿塞拜疆,布隆迪,比利时,贝宁,布基纳法索,孟加拉国,保加利亚,巴哈马,波斯尼亚和黑塞哥维那,白俄罗斯,伯利兹,百慕大,玻利维亚,巴西,文莱,不丹,博茨瓦纳,中非共和国,加拿大,瑞士,智利,中国,象牙海岸,喀麦隆,刚果民主共和国,刚果共和国,哥伦比亚,哥斯达黎加,古巴,北塞浦路斯,塞浦路斯,捷克共和国,德国,吉布提,丹麦,多明尼加共和国,阿尔及利亚,厄瓜多尔,埃及,厄立特里亚,西班牙,爱沙尼亚,埃塞俄比亚,芬兰,斐济,福克兰群岛,法国,加蓬,英国,格鲁吉亚,加纳,几内亚,冈比亚,几内亚比绍,赤道几内亚,希腊,格陵兰,危地马拉,法属圭亚那,圭亚那,洪都拉斯,克罗地亚,海地,匈牙利,印尼,印度,爱尔兰,伊朗,伊拉克,冰岛,以色列,意大利,牙买加,约旦,日本,哈萨克斯坦,肯尼亚,吉尔吉斯斯坦,柬埔寨,韩国,科索沃,科威特,老挝,黎巴嫩,利比里亚,利比亚,斯里兰卡,莱索托,立陶宛,卢森堡,拉脱维亚,摩洛哥,摩尔多瓦,马达加斯加,墨西哥,马其顿,马里,缅甸,黑山,蒙古,莫桑比克,毛里塔尼亚,马拉维,马来西亚,纳米比亚,新喀里多尼亚,尼日尔,尼日利亚,尼加拉瓜,荷兰,挪威,尼泊尔,新西兰,阿曼,巴基斯坦,巴拿马,秘鲁,菲律宾,巴布新几内亚,波兰,波多黎各,北朝鲜	,葡萄牙	,巴拉圭	,卡塔尔	,罗马尼亚,俄罗斯,卢旺达,西撒哈拉,沙特阿拉伯,苏丹,南苏丹,塞内加尔,所罗门群岛,塞拉利昂,萨尔瓦多,索马里兰,索马里,塞尔威亚共和国,苏里南,斯洛伐克,斯洛文尼亚,瑞典,斯威士兰,叙利亚,乍得,多哥,泰国,塔吉克斯坦,土库曼斯坦,东帝汶,特立尼达和多巴哥,突尼斯,土耳其,坦桑尼亚联合共和国,乌干达3,乌克兰,乌拉圭,美国,乌兹别克斯坦,委内瑞拉,越南,瓦努阿图,西岸,也门,南非,赞比亚,津巴布韦");
+		$this->city = explode(",","北京,天津,上海,重庆,河北,河南,云南,辽宁,黑龙江,湖南,安徽,山东,新疆,江苏,浙江,江西,湖北,广西,甘肃,山西,内蒙古,陕西,吉林,福建,贵州,广东,青海,西藏,四川,宁夏,海南,台湾,香港,澳门");
+		$this->explorer = $m->field("*,count(`explorer`) as explorer_sum")->group("explorer")->order("explorer_sum desc")->select();
+		$this->system = $m->field("*,count(`system`) as system_sum")->group("`system`")->order("system_sum desc")->select();
+		$this->countrysum = $m->field("*,count(`country`) as country_sum")->group("`country`")->order("country_sum desc")->select();
+		$this->citysum = $m->field("*,count(`state`) as city_sum")->group("`state`")->order("city_sum desc")->select();
+		$this->display();
+	}
+	
+	public function visitorList(){
+		extract(I(''));
+		$m = D("visitor");
+		$cx = array("id"=>array("neq",0));
+		if($sSearch !=''){
+			$cx = array(
+				"ip"		=> array("like","%". $sSearch ."%"),
+				"method"	=> array("eq",$sSearch),
+				"path"		=> array("like","%".$sSearch."%"),
+				"protocol"	=> array("like","%".$sSearch."%"),
+				"status"	=> array("eq",$sSearch),
+				"explorer"	=> array("eq",$sSearch),
+				"system"	=> array("eq",$sSearch),
+				"core"		=> array("eq",$sSearch),
+				"version"	=> array("eq",$sSearch),
+				"country"	=> array("eq",$sSearch),
+				"state"		=> array("eq",$sSearch),
+				"area"		=> array("eq",$sSearch),
+				"_logic"	=> "or",
+			);
+		}
+		$columns = "mDataProp_".$iSortCol_0;
+		$order = $iSortCol_0=="" ? "id desc" : $$columns ." ".$sSortDir_0;
+		$count = $m->where($cx)->count();
+		$page = new \Think\Page($count,$iDisplayLength);
+		$show = $page->show();
+		$country = $m->where($cx)->order($order)->limit($iDisplayStart.','.$page->listRows)->select();
+        $output['sEcho'] = $sEcho;
+        $output['iTotalDisplayRecords'] = $count;
+        $output['iTotalRecords'] = $count; //总共有几条数据
+
+		$data = array();
+		foreach($country as $key=>$val){
+			$val['path'] = "<a href='#' title='{$val['path']}'>". msubstr($val['path'],0,20,"utf-8",true) ."</a>";
+			$val['url'] = "<a href='{$val['url']}' title='{$val['url']}' target='_url'>". msubstr($val['url'],0,20,"utf-8",true) ."</a>";
+			$data[$key] = $val;
+		}
+        $output['aaData'] = $data;
+		$this->ajaxReturn($output);
+	}
+	
 	public function func(){
 		extract(I(''));
 		if(IS_POST){

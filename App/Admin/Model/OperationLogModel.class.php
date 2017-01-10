@@ -22,7 +22,7 @@ class OperationLogModel extends \Think\Model{
 		$m = D("operationLog");
 		$count = $m->count();
 		$page = new \Think\Page($count,20,'','_self');
-		$list = $m->limit($page->firstRow.','.$page->listRows)->select();
+		$list = $m->limit($page->firstRow.','.$page->listRows)->order("id desc")->select();
 		$data = array(
 			"list"	=> $list,
 			"page"	=> $page->show()

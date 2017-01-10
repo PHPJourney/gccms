@@ -3,7 +3,7 @@ namespace Admin\Controller;
 class BaseController extends \Common\Controller\CommonController{
 	
 	public function _initialize(){
-		$this->setting = $this->setting();
+		parent::_initialize();
 		$this->checkLogin();
 		$this->cache = operation();
 		$this->memory = C("memory");
@@ -16,10 +16,6 @@ class BaseController extends \Common\Controller\CommonController{
 		$menu = D("menu");
 		$list = $menu->where(array('used=1'))->order("`order` asc")->select();
 		$this->leftmenu = $list;
-	}
-	
-	protected function setting(){
-		return D("Setting")->read();
 	}
 	
 	
