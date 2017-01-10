@@ -41,40 +41,40 @@ class CommonController extends \Think\Controller{
 		session("visitor_client_ip",$ip);
 		if(empty(session('visitor'))){
 			$visitor[] = array(
-				'ip'		=> $ip,
-				'path'		=> $_SERVER['PATH_INFO'],
-				'method'	=> $_SERVER['REQUEST_METHOD'],
-				'protocol'	=> $_SERVER['SERVER_PROTOCOL'],
-				'url'		=> $_SERVER['HTTP_REFERER'],
-				'status'	=> $_SERVER['REDIRECT_STATUS'],
-				'explorer'	=> getBrowser(),
-				'system'	=> getOS(),
-				'core'		=> getOS(1),
-				'version'	=> getBrowserVer(),
-				'country'	=> $area->data->country,
-				'state'		=> $area->data->region,
-				'area'		=> $area->data->isp,
+				'ip'		=> $ip=='' ? '-' : $ip,
+				'path'		=> $_SERVER['PATH_INFO']=='' ? '-' : $_SERVER['PATH_INFO'],
+				'method'	=> $_SERVER['REQUEST_METHOD']=='' ? '-' : $_SERVER['REQUEST_METHOD'],
+				'protocol'	=> $_SERVER['SERVER_PROTOCOL']=='' ? '-' : $_SERVER['SERVER_PROTOCOL'],
+				'url'		=> $_SERVER['HTTP_REFERER']=='' ? '-' : $_SERVER['HTTP_REFERER'],
+				'status'	=> $_SERVER['REDIRECT_STATUS']=='' ? '-' : $_SERVER['REDIRECT_STATUS'],
+				'explorer'	=> getBrowser()=='' ? '-' : getBrowser(),
+				'system'	=> getOS()=='' ? '-' : getOS(),
+				'core'		=> getOS(1)=='' ? '-' : getOS(1),
+				'version'	=> getBrowserVer()=='' ? '-' : getBrowserVer(),
+				'country'	=> $area->data->country=='' ? '-' : $area->data->country,
+				'state'		=> $area->data->region=='' ? '-' : $area->data->region,
+				'area'		=> $area->data->isp=='' ? '-' : $area->data->isp,
 			);
 		}else{
 			$visitor = session("visitor");
 			$visitor[] = array(
-				'ip'		=> $ip,
-				'path'		=> $_SERVER['PATH_INFO'],
-				'method'	=> $_SERVER['REQUEST_METHOD'],
-				'protocol'	=> $_SERVER['SERVER_PROTOCOL'],
-				'url'		=> $_SERVER['HTTP_REFERER'],
-				'status'	=> $_SERVER['REDIRECT_STATUS'],
-				'explorer'	=> getBrowser(),
-				'system'	=> getOS(),
-				'core'		=> getOS(1),
-				'version'	=> getBrowserVer(),
-				'country'	=> $area->data->country,
-				'state'		=> $area->data->region,
-				'area'		=> $area->data->isp,
+				'ip'		=> $ip=='' ? '-' : $ip,
+				'path'		=> $_SERVER['PATH_INFO']=='' ? '-' : $_SERVER['PATH_INFO'],
+				'method'	=> $_SERVER['REQUEST_METHOD']=='' ? '-' : $_SERVER['REQUEST_METHOD'],
+				'protocol'	=> $_SERVER['SERVER_PROTOCOL']=='' ? '-' : $_SERVER['SERVER_PROTOCOL'],
+				'url'		=> $_SERVER['HTTP_REFERER']=='' ? '-' : $_SERVER['HTTP_REFERER'],
+				'status'	=> $_SERVER['REDIRECT_STATUS']=='' ? '-' : $_SERVER['REDIRECT_STATUS'],
+				'explorer'	=> getBrowser()=='' ? '-' : getBrowser(),
+				'system'	=> getOS()=='' ? '-' : getOS(),
+				'core'		=> getOS(1)=='' ? '-' : getOS(1),
+				'version'	=> getBrowserVer()=='' ? '-' : getBrowserVer(),
+				'country'	=> $area->data->country=='' ? '-' : $area->data->country,
+				'state'		=> $area->data->region=='' ? '-' : $area->data->region,
+				'area'		=> $area->data->isp=='' ? '-' : $area->data->isp,
 			);
 		}
 		session('visitor',$visitor);
-		if((time() - session("visitortime") > 300 && session("visitortime") > 0) || count($visitor) > 30){
+		if((time() - session("visitortime") > 300 && session("visitortime") > 0 && !empty($visitor)) || count($visitor) > 30){
 			$m = D("visitor");
 			C("TOKEN_ON",false);
 			if($m->create($visitor)){
