@@ -190,7 +190,7 @@ function getBrowserVer(){
         return 'unknow';
 }
 
-	function getOS ($cate=0){
+	function getOS($cate=0){
 		$agent = $_SERVER['HTTP_USER_AGENT'];
 		$os = false;
 		preg_match("/\(.*?\)/is",$agent,$system);
