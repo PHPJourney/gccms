@@ -25,7 +25,7 @@
 	<ul>
 	<volist name="leftmenu" id="sub">
 		<eq name="sub.pid" value="$vo.id">
-		<li><a href="{$sub.link}" target="right"><span class="icon-caret-right padding-right"></span>{$sub.name}</a></li>
+		<li><a href="<?php if (false === C('SUB_DOMAIN_MODE')){ echo "/".MODULE_NAME; } ?>{$sub.link}" target="right"><span class="icon-caret-right padding-right"></span>{$sub.name}</a></li>
 		</eq>
 	</volist>
 	</ul>
