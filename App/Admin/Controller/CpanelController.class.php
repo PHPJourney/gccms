@@ -845,7 +845,11 @@ class CpanelController extends BaseController {
 		$Db = \Think\Db::getInstance();
 		$list = $Db->query('SHOW TABLE STATUS');
 		$list = array_map('array_change_key_case', $list);
-		$this->dbtab = $list;
+		foreach($list as $row){
+			$row['data_length'] = $this->byte_format($row['data_length']);
+			$dbtab[] = $row;
+		}
+		$this->dbtab = $dbtab;
 		$this->display();
 	}
 

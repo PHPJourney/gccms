@@ -32,7 +32,7 @@
 						<td>{$vo.comment}</td>
 						<td>{$vo.engine}</td>
 						<td>{$vo.rows}</td>
-						<td>{$vo.data_length|format_bytes}</td>
+						<td>{$vo.data_length}</td>
 						<td>{$vo.create_time}</td>
 						<td><?php if(strstr($vo['name'],C("DB_PREFIX"))){ echo $setting['stitle']."表"; }elseif($vo['comment']=="VIEW" && $vo['engine']==''){
 							echo "视图表";
