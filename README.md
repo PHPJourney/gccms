@@ -1,5 +1,10 @@
 # `GCCMS`
-[![GCCMS](http://groupcoin.tech/Public/default/images/visitor.png)](http://groupcoin.tech "访客统计")<br>
+
+[![GCCMS](http://groupcoin.tech/Public/floderIcon/tplsecret.png)](http://groupcoin.tech "在线模板管理安全验证")<br>
+[![GCCMS](http://groupcoin.tech/Public/floderIcon/tplModel.png)](http://groupcoin.tech "在线模板分组管理")<br>
+[![GCCMS](http://groupcoin.tech/Public/floderIcon/tplView.png)](http://groupcoin.tech "在线模板视图管理")<br>
+[![GCCMS](http://groupcoin.tech/Public/floderIcon/tplTheme.png)](http://groupcoin.tech "在线模板视图管理")<br>
+[![GCCMS](http://groupcoin.tech/Public/floderIcon/themetpl.png)](http://groupcoin.tech "在线模板视图文件管理")<br>
 #### 项目适用于对THINKPHP框架比较熟悉的用户
 Version：0.0.1（初版）<br>
 `GCCMS` UI框架使用 @pintuer，富媒体编辑器采用 @xhEditor，Excel为PHPExcel插件，后台核心框架为THINKPHP3.2.3<br>
