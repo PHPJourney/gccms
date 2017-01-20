@@ -1,11 +1,11 @@
 <?php
 namespace Admin\Controller;
 class CpanelController extends BaseController {
-	
+
 	public function index(){
 		$this->display();
 	}
-	
+
 	public function info(){
 		if(IS_POST){
 			extract(I(''));
@@ -16,12 +16,12 @@ class CpanelController extends BaseController {
 			$this->display();
 		}
 	}
-	
+
 	public function log(){
 		$this->log = D("Logrecord")->read();
 		$this->display();
 	}
-	
+
 	public function runtimeshow(){
 		extract(I(''));
 		header("Content-Type:text/plain;charset=utf-8");
@@ -36,7 +36,7 @@ class CpanelController extends BaseController {
 <script src="//cdn.bootcss.com/highlight.js/8.0/highlight.min.js"></script>
 <script>hljs.initHighlightingOnLoad();</script>');
 	}
-	
+
 	public function logshow(){
 		extract(I(''));
 		header("Content-Type:text/plain;charset=utf-8");
@@ -51,13 +51,215 @@ class CpanelController extends BaseController {
 <script src="//cdn.bootcss.com/highlight.js/8.0/highlight.min.js"></script>
 <script>hljs.initHighlightingOnLoad();</script>');
 	}
+
+	public function tpl(){
+		extract(I(''));
+		if(IS_POST){
+			$tplsecpass != "tplpass" ? $this->error("密码不正确，无法访问") : '';
+			session("tplsecpass",time());
+			$this->success("欢迎访问模板管理页面");
+		}else{
+			if(time() - session("tplsecpass") > 300){
+				session("tplsecpass",null);
+			}else{
+				session("tplsecpass", time());
+			}
+			$this->tplsecpass = session("tplsecpass");
+			if($group==''){
+				$path = $path == '' ? APP_PATH : $path;
+				$this->folder = $this->listDir($path);
+			}else{
+				$this->folder = $this->listDir($path);
+				$this->group = $group;
+			}
+			$this->path = str_replace("//","/",$path);
+			$prev = explode("/",$path);
+			array_pop($prev);
+			$this->prev = implode("/",$prev) != '.' ? implode("/",$prev) : APP_PATH;
+			if($act=='edit'){
+				$this->body = file_get_contents($path);
+				$this->display("tpl_edit");
+			}else if($act=="mkdir"){
+				mkdir($path.'/'.$filename, 0777);
+				$this->success("文件夹创建成功");
+			}else if ($act=="mkfile"){
+				file_put_contents($path.'/'.$filename, "");
+				$this->success("文件创建成功");
+			}else if($act=="delete"){
+				if(is_dir($path)){
+					$this->error("不允许删除文件夹");
+				}else{
+					unlink($path);
+					$this->success("文件删除成功");
+				}
+			}else{
+				$this->display();
+			}
+		}
+	}
 	
+	public function tpl_edit(){
+		if(IS_POST){
+			extract(I(''));
+			@exec("sudo chmod -R 0777 ".$_SERVER['DOCUMENT_ROOT'].$path);
+			if(is_writable($path)){
+				$save = file_put_contents($path,htmlspecialchars_decode($content));
+				false !== $save ? $this->success("修改成功") : $this->error("修改失败！".$save);
+			}else{
+				$this->error("文件无权写入");
+			}
+		}
+	}
+	
+	private function getChmod($filepath){
+		return substr(base_convert(@fileperms($filepath),10,8),-4);
+	}
+	
+	private function listDir($dir){
+		$dir .= substr($dir, -1) == '/' ? '' : '/';
+		$dirInfo = array();
+		foreach (glob($dir.'*') as $v) {
+			$dirInfo[] = array(
+				'type'	=> is_dir($v) ? 'folder' : 'file',
+				'name'	=> end(explode('/',$v)),
+				'des'	=> is_dir($v) ? "文件夹" : $this->floder($v),
+				'size'	=> $this->floderSize($v),
+				'time'	=> $this->floderTime($v),
+				'img'	=> "/Public/floderIcon/".$this->floderImg($v,is_dir($v) ? 1 : 0),
+				'mode'	=> $this->getChmod($v),
+			);
+		}
+		return $dirInfo;
+	}
+
+	private function floderImg($file,$cate=0){
+		if(!is_dir($file)){
+			$file = explode('.',$file);
+			$ext = end($file);
+		}
+		$floderimg = array(
+			"php"	=> "php.png",
+			"htm"	=> "html.gif",
+			"html"	=> "html.gif",
+			"shtml"	=> "html.gif",
+			"js"	=> "js.gif",
+			"css"	=> "css.gif",
+			"png"	=> "png.png",
+			"pdf"	=> "pdf.png",
+			"swf"	=> "swf.png",
+			"ico"	=> "ico.png",
+			"eps"	=> "eps.png",
+			"bmp"	=> "bmp.png",
+			"jpg"	=> "jpg.gif",
+			"jpeg"	=> "jpg.gif",
+			"gif"	=> "gif.gif",
+			"ttf"	=> "other.gif",
+			"TTF"	=> "other.gif",
+			"tiff"	=> "tiff.png",
+			"eot"	=> "other.gif",
+			"svg"	=> "other.gif",
+			"woff"	=> "other.gif",
+			"1"		=> "floder.gif",
+		);
+		$img = $cate == 1 ? $floderimg[1] : $floderimg[$ext];
+		return $img;
+	}
+
+	private function floderTime($dir){
+		return date('Y-m-d H:i:s',fileatime($dir));
+	}
+
+	private function floderSize($dir){
+		if(!is_dir($dir)){
+			$filesize[] = filesize($dir);
+		}else{
+			$filesize[] = $this->floderScan($dir);
+		}
+		return $this->byte_format(array_sum($filesize));
+	}
+	
+	private function floderScan($dir){
+		foreach(scandir($dir) as $v){
+			if(!is_dir($dir.'/'.$v)){//如果不是目录，就是文件了
+				$filesize[] =filesize($dir.'/'.$v);
+			}else{
+				if(!in_array($v,array(".",".."))){
+					$filesize[] = $this->floderScan($dir.'/'.$v);
+				}
+			}
+		}
+		return array_sum($filesize);
+	}
+
+	private function byte_format($size, $dec=2){
+		$a = array("B", "KB", "MB", "GB", "TB", "PB");
+		$pos = 0;
+		while ($size >= 1024) {
+			 $size /= 1024;
+			   $pos++;
+		}
+		return round($size,$dec)." ".$a[$pos];
+	 }
+
+	private function floder($file){
+		$ext = explode(".",$file);
+		$filext = end($ext);
+		switch($filext){
+			case 'php':
+				$des = "Personal home page(动态脚本语言文件)";
+				break;
+			case 'htm':
+				$des = "网页模板文件";
+				break;
+			case 'html':
+				$des = "网页模板文件";
+				break;
+			case 'shtml':
+				$des = "网页模板文件";
+				break;
+			case "css":
+				$des = "网页样式文件";
+				break;
+			case "png":
+				$des = "网页图形文件";
+				break;
+			case "gif":
+				$des = "网页图形文件";
+				break;
+			case "jpg":
+				$des = "网页图形文件";
+				break;
+			case "jpeg":
+				$des = "网页图形文件";
+				break;
+			case "js":
+				$des = "网页脚本文件";
+				break;
+			case "ttf":
+				$des = "自定义字体文件";
+				break;
+			case 'TTF':
+				$des = "自定义字体文件";
+				break;
+			case 'eot':
+				$des = "自定义字体文件";
+				break;
+			case "svg":
+				$des = "自定义图形文件";
+				break;
+			case "woff":
+				$des = "自定义字体文件";
+				break;
+		}
+		return $des;
+	}
+
 	public function profile(){
 		extract(I(''));
 		$this->cate = $cate;
 		$this->display();
 	}
-	
+
 	public function ec(){
 		if(IS_POST){
 			extract(I(''));
@@ -68,12 +270,12 @@ class CpanelController extends BaseController {
 			$this->display();
 		}
 	}
-	
+
 	public function recharge(){
 		$this->pay = D("PayConfig")->read();
 		$this->display();
 	}
-	
+
 	public function recharge_add(){
 		if(IS_POST){
 			extract(I(''));
@@ -88,7 +290,7 @@ class CpanelController extends BaseController {
 			$this->display();
 		}
 	}
-	
+
 	public function recharge_log(){
 		$this->recharge = D("Recharge")->read();
 		$payconfig = D("PayConfig")->read();
@@ -99,13 +301,13 @@ class CpanelController extends BaseController {
 		$this->payconfig = $list;
 		$this->display();
 	}
-	
+
 	public function rechargestatus(){
 		extract(I(''));
 		$up = D("Recharge")->update($id);
 		$this->checkBoolean($up);
 	}
-	
+
 	public function pay_config(){
 		extract(I(''));
 		if(IS_POST){
@@ -117,7 +319,7 @@ class CpanelController extends BaseController {
 			$this->display();
 		}
 	}
-	
+
 	public function oempay(){
 		if(IS_POST){
 			extract(I(''));
@@ -132,21 +334,21 @@ class CpanelController extends BaseController {
 			$this->checkBoolean($up);
 		}
 	}
-	
+
 	public function pay_del(){
 		extract(I(''));
 		$up = D("PayConfig")->remove($id);
 		$this->checkBoolean($up);
 	}
-	
+
 	public function map(){
 		$this->display();
 	}
-	
+
 	public function intro(){
 		$this->display();
 	}
-	
+
 	public function sign(){
 		if(IS_POST){
 			extract(I(''));
@@ -157,7 +359,7 @@ class CpanelController extends BaseController {
 			$this->display();
 		}
 	}
-	
+
 	public function visitor(){
 		$m = D("visitor");
 		$this->countsum = $m->count();
@@ -172,7 +374,7 @@ class CpanelController extends BaseController {
 		$this->citysum = $m->field("*,count(`state`) as city_sum")->group("`state`")->order("city_sum desc")->select();
 		$this->display();
 	}
-	
+
 	public function visitorList(){
 		extract(I(''));
 		$m = D("visitor");
@@ -213,7 +415,7 @@ class CpanelController extends BaseController {
         $output['aaData'] = $data;
 		$this->ajaxReturn($output);
 	}
-	
+
 	public function func(){
 		extract(I(''));
 		if(IS_POST){
@@ -225,7 +427,7 @@ class CpanelController extends BaseController {
 			$this->display();
 		}
 	}
-	
+
 	public function nature(){
 		extract(I(''));
 		if(IS_POST){
@@ -237,7 +439,7 @@ class CpanelController extends BaseController {
 			$this->display();
 		}
 	}
-	
+
 	public function seo(){
 		extract(I(''));
 		if(IS_POST){
@@ -249,7 +451,7 @@ class CpanelController extends BaseController {
 			$this->display();
 		}
 	}
-	
+
 	public function point(){
 		if(IS_POST){
 			extract(I(''));
@@ -271,7 +473,7 @@ class CpanelController extends BaseController {
 			$this->display();
 		}
 	}
-	
+
 	public function point_credits(){
 		extract(I(''));
 		if(IS_POST){
@@ -290,7 +492,7 @@ class CpanelController extends BaseController {
 			$this->display();
 		}
 	}
-	
+
 	public function pointd(){
 		if(IS_POST){
 			extract(I(''));
@@ -300,7 +502,7 @@ class CpanelController extends BaseController {
 			die("Access deny");
 		}
 	}
-	
+
 	public function time(){
 		if(IS_POST){
 			extract(I(''));
@@ -312,7 +514,7 @@ class CpanelController extends BaseController {
 			$this->display();
 		}
 	}
-	
+
 	public function upload(){
 		if(IS_POST){
 			extract(I(''));
@@ -323,7 +525,7 @@ class CpanelController extends BaseController {
 			$this->display();
 		}
 	}
-	
+
 	public function mark(){
 		if(IS_POST){
 			extract(I(''));
@@ -335,7 +537,7 @@ class CpanelController extends BaseController {
 			$this->display();
 		}
 	}
-	
+
 	public function search(){
 		if(IS_POST){
 			extract(I(''));
@@ -346,7 +548,7 @@ class CpanelController extends BaseController {
 			$this->display();
 		}
 	}
-	
+
 	public function pass(){
 		if(IS_POST){
 			extract(I(''));
@@ -375,7 +577,7 @@ class CpanelController extends BaseController {
 			$this->display();
 		}
 	}
-	
+
 	public function nav(){
 		if(IS_POST){
 			extract(I(''));
@@ -395,21 +597,21 @@ class CpanelController extends BaseController {
 			$this->display();
 		}
 	}
-	
+
 	public function ui(){
 		$this->display();
 	}
-	
+
 	public function themes(){
 		$this->display();
 	}
-	
+
 	public function news(){
 		$this->news = D("Sort")->read();
 		$this->article = D("Article")->read();
 		$this->display();
 	}
-	
+
 	public function add_news(){
 		if(IS_POST){
 			extract(I(""));
@@ -420,7 +622,7 @@ class CpanelController extends BaseController {
 			$this->display();
 		}
 	}
-	
+
 	public function cate(){
 		if(IS_POST){
 			extract(I(''));
@@ -431,13 +633,13 @@ class CpanelController extends BaseController {
 			$this->display();
 		}
 	}
-	
+
 	public function getcate(){
 		extract(I(''));
 		$sort = D("sort")->where(array("pid"=>$pid))->select();
 		$this->ajaxReturn($sort);
 	}
-	
+
 	public function menu(){
 		$menu = D("menu");
 		$count = $menu->count();
@@ -447,7 +649,7 @@ class CpanelController extends BaseController {
 		$this->page = $page->show();
 		$this->display();
 	}
-	
+
 	public function menu_add(){
 		if(IS_POST){
 			extract(I(''));
@@ -461,7 +663,7 @@ class CpanelController extends BaseController {
 			$this->display();
 		}
 	}
-	
+
 	public function upused(){
 		if(IS_POST){
 			extract(I(''));
@@ -474,13 +676,13 @@ class CpanelController extends BaseController {
 			$this->checkBoolean($up);
 		}
 	}
-	
+
 	public function menu_del(){
 		extract(I(''));
 		$up = D("Menu")->remove($id);
 		$this->checkBoolean($up);
 	}
-	
+
 	public function menu_update(){
 		if(IS_POST){
 			extract(I(""));
@@ -490,7 +692,7 @@ class CpanelController extends BaseController {
 			$this->checkBoolean($up);
 		}
 	}
-	
+
 	public function menu_edit(){
 		extract(I(''));
 		if(IS_POST){
@@ -508,7 +710,7 @@ class CpanelController extends BaseController {
 			$this->display("Cpanel/menu_add");
 		}
 	}
-	
+
 	public function cache(){
 		extract(I(''));
 		if(IS_POST){
@@ -536,7 +738,7 @@ class CpanelController extends BaseController {
 		$this->step = I("get.step");
 		$this->display();
 	}
-	
+
 	public function cleancache(){
 		extract(I(''));
 			switch($type){
@@ -589,7 +791,7 @@ class CpanelController extends BaseController {
 					}
 					break;
 				case "log":
-					
+
 					if($index==0){
 						$catename = "日志《程序创建文件》";
 						$status = 1;
@@ -610,7 +812,7 @@ class CpanelController extends BaseController {
 						$catename = "日志《充值日志》";
 						$status = 2;
 					}
-				break;	
+				break;
 			}
 		$msg = array(
 			"info"	=> "正在更新{$catename}缓存,请稍后",
@@ -619,26 +821,26 @@ class CpanelController extends BaseController {
 		);
 		$this->ajaxReturn($msg);
 	}
-	
+
 	public function statis(){
 		$this->display();
 	}
-	
+
 	public function runtime(){
 		$log = D("OperationLog")->read();
 		$this->operairlog = $log['list'];
 		$this->page = $log['page'];
 		$this->display();
 	}
-	
+
 	public function planTask(){
 		$this->display();
 	}
-	
+
 	public function rewrite(){
 		$this->display();
 	}
-	
+
 	public function dbbak(){
 		$Db = \Think\Db::getInstance();
 		$list = $Db->query('SHOW TABLE STATUS');
@@ -646,7 +848,7 @@ class CpanelController extends BaseController {
 		$this->dbtab = $list;
 		$this->display();
 	}
-	
+
 	public function optimize($tables = NULL)
 	{
 		if ($tables) {
@@ -710,7 +912,7 @@ class CpanelController extends BaseController {
 			$this->error('请指定要修复的表！');
 		}
 	}
-	
+
 	public function dbreset(){
 		$path = realpath(DATABASE_PATH);
 		$flag = \FilesystemIterator::KEY_AS_FILENAME;
@@ -743,7 +945,7 @@ class CpanelController extends BaseController {
 		$this->dbreset = $list;
 		$this->display();
 	}
-	
+
 	public function import($time = 0, $part = NULL, $start = NULL)
 	{
 		if (is_numeric($time) && is_null($part) && is_null($start)) {
@@ -807,7 +1009,7 @@ class CpanelController extends BaseController {
 			}
 		}
 	}
-	
+
 	public function dbdel($time = 0)
 	{
 		if ($time) {
@@ -886,7 +1088,7 @@ class CpanelController extends BaseController {
 			}
 		}
 	}
-	
+
 	public function excel($tables = NULL)
 	{
 		if ($tables) {

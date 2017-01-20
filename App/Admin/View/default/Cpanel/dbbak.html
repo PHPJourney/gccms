@@ -34,7 +34,9 @@
 						<td>{$vo.rows}</td>
 						<td>{$vo.data_length|format_bytes}</td>
 						<td>{$vo.create_time}</td>
-						<td><?php if(strstr($vo['name'],C("DB_PREFIX"))){ echo $setting['stitle']."表"; }else{ echo "未知表"; } ?></td>
+						<td><?php if(strstr($vo['name'],C("DB_PREFIX"))){ echo $setting['stitle']."表"; }elseif($vo['comment']=="VIEW" && $vo['engine']==''){
+							echo "视图表";
+						}else{ echo "未知表"; } ?></td>
 						<td class="info">未备份</td>
 						<td><a class="no-refresh text-green" href="{:U('Cpanel/excel?tables='.$vo['name'])}">导出表</a> | <a class="ajax-get no-refresh text-yellow" href="{:U('Cpanel/optimize?tables='.$vo['name'])}">优化表</a> | <a class="ajax-get text-blue no-refresh" href="{:U('Cpanel/repair?tables='.$vo['name'])}">修复表</a></td>
 					</tr>

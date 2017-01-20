@@ -6,4 +6,5 @@ return array(
 	'LOG_FILE_SIZE' 		=>  40960,   // 日志文件大小限制
 	'LOG_DB_FIELDS'			=>  "logtags,logtext",   // 日志记录数据库字段 0为tags 1为内容
 	"SUB_DOMAIN_MODE"		=> false,//是否开启子域名模式
+	"TPL_SECPASS"			=> "tplsecpass", //模板管理密码
 );
